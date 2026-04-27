@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, FolderGit2, LayoutGrid, Users, Truck } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -15,16 +15,34 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import entidades from '@/routes/entidades';
 import type { NavItem } from '@/types';
 
+// Itens de navegação principais
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
     },
+    {
+        title: 'Clientes',
+        href: entidades.index.url({ query: { tipo: 'cliente' } }),
+        icon: Users,
+    },
+    {
+        title: 'Fornecedores',
+        href: entidades.index.url({ query: { tipo: 'fornecedor' } }),
+        icon: Truck,
+    },
+    {
+        title: 'Países',
+        href: '/paises',  // Ajusta se tiveres rotas para países
+        icon: LayoutGrid,
+    },
 ];
 
+// Itens de navegação do footer
 const footerNavItems: NavItem[] = [
     {
         title: 'Repository',
