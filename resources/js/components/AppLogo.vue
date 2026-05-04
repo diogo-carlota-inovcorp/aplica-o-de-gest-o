@@ -1,16 +1,25 @@
 <script setup lang="ts">
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import { usePage } from '@inertiajs/vue3';
+
+const empresa = usePage().props.empresa as {
+    logo?: string;
+    nome: string;
+};
 </script>
 
 <template>
-    <div
-        class="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
-    >
-        <AppLogoIcon class="size-5 fill-current text-white dark:text-black" />
-    </div>
-    <div class="ml-1 grid flex-1 text-left text-sm">
-        <span class="mb-0.5 truncate leading-tight font-semibold"
-            >Laravel Starter Kit</span
-        >
+    <div class="flex items-center gap-2">
+        <img
+            v-if="empresa?.logo"
+            :src="'/storage/' + empresa.logo"
+            class="h-8 w-8 object-contain"
+            :alt="empresa?.nome"
+        />
+        <div v-else class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
+            <span class="text-sm font-bold text-white">{{ empresa?.nome?.charAt(0) || 'G' }}</span>
+        </div>
+        <span class="text-sm font-semibold truncate max-w-[120px]">
+            
+        </span>
     </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue'
+
 import { useForm } from '@inertiajs/vue3'
 import { Link } from '@inertiajs/vue3'
 import { ref } from 'vue'
@@ -127,7 +127,7 @@ const submit = () => {
                             </div>
                         </div>
 
-                        <!-- País -->   
+                        <!-- País -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700">País</label>
                             <select v-model="form.pais_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900  ">
@@ -153,9 +153,9 @@ const submit = () => {
                         <!-- Número (se for numeração automática ou manual) -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Número</label>
-                            <input 
-                                v-model="form.numero" 
-                                type="text" 
+                            <input
+                                v-model="form.numero"
+                                type="text"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900"
                                 placeholder="Número da entidade"
                             >

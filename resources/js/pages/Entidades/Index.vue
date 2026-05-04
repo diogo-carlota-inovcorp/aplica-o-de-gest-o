@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue'
+
 import DataTable from './components/DataTable.vue'
 import { Link, router } from '@inertiajs/vue3'
 
