@@ -14,7 +14,6 @@ return new class extends Migration
             $table->date('data_fatura');
             $table->date('data_vencimento');
             $table->foreignId('fornecedor_id')->constrained('entidades')->onDelete('restrict');
-            $table->foreignId('encomenda_fornecedor_id')->nullable()->constrained('encomenda_fornecedor')->onDelete('set null');
             $table->decimal('valor_total', 12, 2);
             $table->string('documento')->nullable();
             $table->string('comprovativo_pagamento')->nullable();

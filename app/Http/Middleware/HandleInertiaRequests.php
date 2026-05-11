@@ -12,13 +12,24 @@ class HandleInertiaRequests extends Middleware
 
     public function share(Request $request)
     {
-        return array_merge(parent::share($request), [
+         $locatarioAtual = null;
+    if (session()->has('locatario_atual')) {
+        $locatarioAtual = \App\Models\Locatario::where('slug', session('locatario_atual'))->first();
+    }
+
+
+
+
+    return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user(),
             ],
             'empresa' => function () {
                 return EmpresaConfig::getConfig();
             },
+            'locatario_atual' => $locatarioAtual,
+            'empresa' => $locatarioAtual, 
+            'csrf_token' => csrf_token(),
         ]);
     }
 }

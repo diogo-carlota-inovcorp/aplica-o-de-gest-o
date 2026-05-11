@@ -96,10 +96,17 @@ class EntidadeController extends Controller
             'estado' => 'boolean',
         ]);
 
-        $lastEntity = Entidade::orderBy('id', 'desc')->first();
-        $validated['numero'] = 'E' . str_pad(($lastEntity?->id ?? 0) + 1, 6, '0', STR_PAD_LEFT);
+        $lastEntity = Entidade::where('locatario_id', session('locatario_atual_id'))->orderBy('id', 'desc')->first();
 
-        Entidade::create($validated);
+    if ($lastEntity && preg_match('/E(\d+)/', $lastEntity->numero, $matches)) {
+        $nextNumber = intval($matches[1]) + 1;
+    } else {
+        $nextNumber = 1;
+    }
+
+    $validated['numero'] = 'E' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+    Entidade::create($validated);
 
         ActivityLogger::log(
             "Criou {$validated['tipo']}: {$validated['nome']} (NIF: {$validated['nif']})",

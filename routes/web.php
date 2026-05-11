@@ -11,17 +11,90 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PermissaoController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LocatarioController;
+use App\Http\Controllers\PlanoController;
+use App\Http\Controllers\AssinaturaController;
+use App\Http\Controllers\CalendarioController;
 use Illuminate\Support\Facades\Route;
- use App\Http\Controllers\EmpresaConfigController;
- use App\Http\Controllers\CalendarioController;
 
 Route::get('/', function () {
     return redirect('/dashboard');
 });
+// API para planos
+Route::get('/api/planos-disponiveis', [PlanoController::class, 'planosDisponiveis'])->name('api.planos-disponiveis');
+
+Route::get('/api/meus-locatarios', [LocatarioController::class, 'meusLocatarios'])->name('api.meus-locatarios');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // =============================================
+    // MÓDULO MULTI-TENANT (LOCATÁRIOS)
+    // =============================================
+
+    // Trocar de locatário
+    Route::get('/mudar-locatario/{slug}', [LocatarioController::class, 'mudarLocatario'])->name('locatarios.mudar');
+
+    // API para buscar os meus locatários
+    Route::get('/api/meus-locatarios', [LocatarioController::class, 'meusLocatarios'])->name('api.meus-locatarios');
+
+    // Gestão de Locatários (para o proprietário)
+    Route::prefix('locatarios')->group(function () {
+        Route::get('/', [LocatarioController::class, 'index'])->name('locatarios.index');
+        Route::get('/criar', [LocatarioController::class, 'create'])->name('locatarios.create');
+        Route::post('/', [LocatarioController::class, 'store'])->name('locatarios.store');
+        Route::get('/{locatario}/editar', [LocatarioController::class, 'edit'])->name('locatarios.edit');
+        Route::put('/{locatario}', [LocatarioController::class, 'update'])->name('locatarios.update');
+        Route::delete('/{locatario}', [LocatarioController::class, 'destroy'])->name('locatarios.destroy');
+
+        // Convidar utilizador para o locatário
+        Route::post('/{locatario}/convidar', [LocatarioController::class, 'convidar'])->name('locatarios.convidar');
+
+        // Remover utilizador do locatário
+        Route::delete('/{locatario}/utilizador/{user}', [LocatarioController::class, 'removerUtilizador'])->name('locatarios.remover-utilizador');
+
+        // Onboarding
+        Route::get('/{locatario}/onboarding', [LocatarioController::class, 'onboarding'])->name('locatarios.onboarding');
+        Route::post('/{locatario}/finalizar-onboarding', [LocatarioController::class, 'finalizarOnboarding'])->name('locatarios.finalizar-onboarding');
+    });
+
+    // Gestão de Planos (apenas administradores do sistema)
+    Route::prefix('planos')->middleware(['can:admin'])->group(function () {
+        Route::get('/', [PlanoController::class, 'index'])->name('planos.index');
+        Route::get('/criar', [PlanoController::class, 'create'])->name('planos.create');
+        Route::post('/', [PlanoController::class, 'store'])->name('planos.store');
+        Route::get('/{plano}/editar', [PlanoController::class, 'edit'])->name('planos.edit');
+        Route::put('/{plano}', [PlanoController::class, 'update'])->name('planos.update');
+        Route::delete('/{plano}', [PlanoController::class, 'destroy'])->name('planos.destroy');
+
+    });
+
+    // Gestão de Assinaturas (para o locatário atual)
+ Route::prefix('assinaturas')->group(function () {
+    Route::get('/', [AssinaturaController::class, 'index'])->name('assinaturas.index');
+    Route::get('/planos', [AssinaturaController::class, 'planosDisponiveis'])->name('assinaturas.planos');
+    Route::post('/assinar/{plano}', [AssinaturaController::class, 'assinar'])->name('assinaturas.assinar');
+    Route::post('/upgrade/{planoId}', [AssinaturaController::class, 'upgrade'])->name('assinaturas.upgrade');
+    Route::post('/cancelar', [AssinaturaController::class, 'cancelar'])->name('assinaturas.cancelar');
+    Route::get('/fatura/{assinatura}', [AssinaturaController::class, 'fatura'])->name('assinaturas.fatura');
+});
+    // =============================================
+    // MÓDULO CALENDÁRIO
+    // =============================================
+
+    Route::prefix('calendario')->group(function () {
+        Route::get('/', [CalendarioController::class, 'index'])->name('calendario.index');
+        Route::get('/eventos', [CalendarioController::class, 'getEventos'])->name('calendario.eventos');
+        Route::post('/', [CalendarioController::class, 'store'])->name('calendario.store');
+        Route::put('/{calendario_atividade}', [CalendarioController::class, 'update'])->name('calendario.update');
+        Route::delete('/{calendario_atividade}', [CalendarioController::class, 'destroy'])->name('calendario.destroy');
+        Route::patch('/{calendario_atividade}/date', [CalendarioController::class, 'updateEventDate'])->name('calendario.update-date');
+    });
+
+    // =============================================
+    // MÓDULOS EXISTENTES
+    // =============================================
 
     // Configurações
     Route::resource('paises', PaisController::class);
@@ -63,20 +136,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('permissoes', PermissaoController::class);
 
-
+    // Logs
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 
-
-
-    Route::get('/configuracoes/empresa', [EmpresaConfigController::class, 'index'])->name('empresa.config');
-    Route::put('/configuracoes/empresa', [EmpresaConfigController::class, 'update'])->name('empresa.config.update');
-
-    Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario.index');
-    Route::get('/calendario/eventos', [CalendarioController::class, 'getEventos'])->name('calendario.eventos');
-    Route::post('/calendario', [CalendarioController::class, 'store'])->name('calendario.store');
-    Route::put('/calendario/{calendario_atividade}', [CalendarioController::class, 'update'])->name('calendario.update');
-    Route::delete('/calendario/{calendario_atividade}', [CalendarioController::class, 'destroy'])->name('calendario.destroy');
-    Route::patch('/calendario/{calendario_atividade}/date', [CalendarioController::class, 'updateEventDate'])->name('calendario.update-date');
+    // Configurações da Empresa (Locatário atual)
+    Route::get('/configuracoes/empresa', [LocatarioController::class, 'configuracoes'])->name('empresa.config');
+    Route::put('/configuracoes/empresa', [LocatarioController::class, 'atualizarConfiguracoes'])->name('empresa.config.update');
 });
 
 require __DIR__.'/settings.php';

@@ -50,4 +50,29 @@ class User extends Authenticatable
            ->logOnlyDirty()
        ->dontSubmitEmptyLogs();
  }
+
+
+    public function locatarios()
+    {
+        return $this->belongsToMany(Locatario::class, 'locatario_user')
+            ->withPivot('funcao', 'permissoes', 'ativo', 'convidado_em', 'aceitou_em')
+            ->withTimestamps();
+    }
+
+
+    public function locatarioAtual()
+    {
+        if (session()->has('locatario_atual')) {
+            return $this->locatarios()->where('slug', session('locatario_atual'))->first();
+        }
+
+        return $this->locatarios()->first();
+    }
+
+   
+    public function isProprietarioDe(Locatario $locatario)
+    {
+        $pivot = $this->locatarios()->where('locatario_id', $locatario->id)->first();
+        return $pivot && $pivot->pivot->funcao === 'proprietario';
+    }
 }

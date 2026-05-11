@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\FiltrarPorLocatario;
 use Illuminate\Database\Eloquent\Model;
 
 class Artigo extends Model
 {
+    use FiltrarPorLocatario;
+
     protected $table = 'artigos';
 
     protected $fillable = [
@@ -17,6 +20,7 @@ class Artigo extends Model
         'foto',
         'observacoes',
         'estado',
+        'locatario_id',
     ];
 
     protected $casts = [
@@ -24,9 +28,13 @@ class Artigo extends Model
         'estado' => 'boolean',
     ];
 
-    // Relacionamento com IVA
     public function iva()
     {
         return $this->belongsTo(Iva::class);
+    }
+
+    public function locatario()
+    {
+        return $this->belongsTo(Locatario::class);
     }
 }

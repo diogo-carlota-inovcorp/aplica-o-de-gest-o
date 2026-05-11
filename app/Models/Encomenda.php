@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\FiltrarPorLocatario;
 use Illuminate\Database\Eloquent\Model;
 
 class Encomenda extends Model
 {
+    use FiltrarPorLocatario;
+
     protected $fillable = [
-        'numero', 'data_encomenda', 'cliente_id', 'total', 'estado', 'proposta_id'
+        'numero', 'data_encomenda', 'cliente_id', 'total', 'estado', 'proposta_id',
+        'locatario_id',
     ];
 
     protected $casts = [
@@ -27,5 +31,10 @@ class Encomenda extends Model
     public function proposta()
     {
         return $this->belongsTo(Proposta::class);
+    }
+
+    public function locatario()
+    {
+        return $this->belongsTo(Locatario::class);
     }
 }

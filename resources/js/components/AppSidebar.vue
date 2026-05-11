@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Calendar, FolderGit2, LayoutGrid, Users, Truck, Contact, Receipt, FileText, Building2 } from 'lucide-vue-next';
+import {
+    BookOpen, Calendar, FolderGit2, LayoutGrid, Users, Truck, Contact,
+    Receipt, FileText, Building2, Store, CreditCard, Shield, History
+} from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
+import TenantSwitcher from '@/components/TenantSwitcher.vue';
 import {
     Sidebar,
     SidebarContent,
@@ -18,7 +22,6 @@ import { dashboard } from '@/routes';
 import entidades from '@/routes/entidades';
 import contactos from '@/routes/contactos';
 import type { NavItem } from '@/types';
-import artigos from '@/routes/artigos';
 
 // Obter dados da empresa
 const empresa = usePage().props.empresa as {
@@ -69,30 +72,39 @@ const mainNavItems: NavItem[] = [
         icon: Receipt,
     },
     {
-        title: 'Gestão de utilizadores',
+        title: 'Calendário',
+        href: '/calendario',
+        icon: Calendar,
+    },
+];
+
+// Itens de navegação de gestão (Administração)
+const adminNavItems: NavItem[] = [
+    {
+        title: 'Utilizadores',
         href: '/users',
         icon: Users,
     },
     {
         title: 'Permissões',
         href: '/permissoes',
-        icon: Users,
+        icon: Shield,
     },
     {
         title: 'Logs',
         href: '/logs',
-        icon: FileText,
+        icon: History,
     },
+];
+
+// Itens de navegação do Locatário (Tenant)
+const tenantNavItems: NavItem[] = [
+   
     {
-        title: 'Empresa',
+        title: 'Configurações',
         href: '/configuracoes/empresa',
         icon: Building2,
     },
-    {
-    title: 'Calendário',
-    href: '/calendario',
-    icon: Calendar,
-}
 ];
 
 // Itens de navegação do footer
@@ -117,7 +129,6 @@ const footerNavItems: NavItem[] = [
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
                         <Link :href="dashboard()" class="flex items-center gap-2">
-                            <!-- Usar logo da empresa se existir, senão usar AppLogo -->
                             <img
                                 v-if="empresa?.logo"
                                 :src="'/storage/' + empresa.logo"
@@ -135,7 +146,29 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
+            <!-- Selector de Locatário (Tenant Switcher) -->
+            <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-800">
+                <TenantSwitcher />
+            </div>
+
+            <!-- Menu Principal -->
             <NavMain :items="mainNavItems" />
+
+            <!-- Separador - Administração -->
+            <div class="px-3 py-2">
+                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Administração
+                </div>
+            </div>
+            <NavMain :items="adminNavItems" />
+
+            <!-- Separador - Minha Empresa (Tenant) -->
+            <div class="px-3 py-2">
+                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Minha Empresa
+                </div>
+            </div>
+            <NavMain :items="tenantNavItems" />
         </SidebarContent>
 
         <SidebarFooter>

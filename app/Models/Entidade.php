@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\FiltrarPorLocatario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
 class Entidade extends Model
 {
-
- use Notifiable; // Adicione esta linha
-
+    use Notifiable, FiltrarPorLocatario;
 
     protected $table = 'entidades';
 
@@ -17,7 +16,7 @@ class Entidade extends Model
         'tipo',
         'nif',
         'nome',
-         'numero',
+        'numero',
         'morada',
         'codigo_postal',
         'localidade',
@@ -29,10 +28,16 @@ class Entidade extends Model
         'consentimento_rgpd',
         'observacoes',
         'estado',
+        'locatario_id',
     ];
 
-     public function pais()
+    public function pais()
     {
         return $this->belongsTo(Pais::class, 'pais_id');
+    }
+
+    public function locatario()
+    {
+        return $this->belongsTo(Locatario::class);
     }
 }
