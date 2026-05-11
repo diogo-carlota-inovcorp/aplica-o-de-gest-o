@@ -4,44 +4,32 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\EmpresaConfig;
 
 class HandleInertiaRequests extends Middleware
 {
-    /**
-     * The root template that's loaded on the first page visit.
-     *
-     * @see https://inertiajs.com/server-side-setup#root-template
-     *
-     * @var string
-     */
     protected $rootView = 'app';
 
-    /**
-     * Determines the current asset version.
-     *
-     * @see https://inertiajs.com/asset-versioning
-     */
-    public function version(Request $request): ?string
+    public function share(Request $request)
     {
-        return parent::version($request);
+         $locatarioAtual = null;
+    if (session()->has('locatario_atual')) {
+        $locatarioAtual = \App\Models\Locatario::where('slug', session('locatario_atual'))->first();
     }
 
-    /**
-     * Define the props that are shared by default.
-     *
-     * @see https://inertiajs.com/shared-data
-     *
-     * @return array<string, mixed>
-     */
-    public function share(Request $request): array
-    {
-        return [
-            ...parent::share($request),
-            'name' => config('app.name'),
+
+
+
+    return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user(),
             ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-        ];
+            'empresa' => function () {
+                return EmpresaConfig::getConfig();
+            },
+            'locatario_atual' => $locatarioAtual,
+            'empresa' => $locatarioAtual, 
+            'csrf_token' => csrf_token(),
+        ]);
     }
 }

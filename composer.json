@@ -10,6 +10,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "barryvdh/laravel-dompdf": "^3.1",
+        "guzzlehttp/guzzle": "^7.10",
         "inertiajs/inertia-laravel": "^3.0",
         "laravel/fortify": "^1.36",
         "laravel/framework": "^13.0",
@@ -17,7 +19,7 @@
         "laravel/wayfinder": "^0.1.14",
         "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-medialibrary": "^11.21",
-        "spatie/laravel-permission": "^7.3"
+        "spatie/laravel-permission": "^7.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
@@ -34,7 +36,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+        "app/Helpers/ActivityLogger.php"
+    ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -106,4 +111,7 @@
         }
     },
     "minimum-stability": "stable"
+
+
 }
+
